@@ -72,7 +72,23 @@ export default function StockCrashChart({ data }: Props) {
                 .attr("fill", "none")
                 .attr("stroke", color(label)!)
                 .attr("stroke-width", 2)
-                .attr("d", line as any);
+                .attr("d", line)
+                .on("mouseover", function() {
+                    d3.select(this)
+                        .attr("stroke-width", 4)
+                        .attr(
+                            "stroke",
+                            d3
+                                .color(color(label)!)
+                                ?.brighter(0.7)
+                                ?.toString() ?? color(label)!,
+                        );
+                })
+                .on("mouseout", function() {
+                    d3.select(this)
+                        .attr("stroke-width", 2)
+                        .attr("stroke", color(label)!);
+                });
 
             const lastPoint = series[series.length - 1];
             const text = g
