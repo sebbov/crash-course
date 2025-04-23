@@ -1,0 +1,121 @@
+import * as d3 from "d3";
+import { useEffect, useRef } from "react";
+
+type CrashData = {
+    [label: string]: {
+        [day: string]: number; // y-values like 94.02 (% of ATH), keyed by days since ATH
+    };
+};
+
+type Props = {
+    data: CrashData;
+};
+
+export default function StockCrashChart({ data }: Props) {
+    const ref = useRef<SVGSVGElement | null>(null);
+
+    useEffect(() => {
+        if (!ref.current) return;
+
+        const svg = d3.select(ref.current);
+        svg.selectAll("*").remove(); // Clear previous renders
+
+        const width = 800;
+        const height = 500;
+        const margin = { top: 40, right: 40, bottom: 40, left: 60 };
+
+        const plotWidth = width - margin.left - margin.right;
+        const plotHeight = height - margin.top - margin.bottom;
+
+        const g = svg
+            .attr("width", width)
+            .attr("height", height)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        const allSeries = Object.entries(data).map(([label, points]) =>
+            Object.entries(points).map(([x, y]) => ({
+                label,
+                x: +x,
+                y: +y,
+            })),
+        );
+
+        const flatData = allSeries.flat();
+
+        const xScale = d3
+            .scaleLinear()
+            .domain([0, d3.max(flatData, (d) => d.x)!])
+            .range([0, plotWidth]);
+
+        const yScale = d3
+            .scaleLinear()
+            .domain([d3.min(flatData, (d) => d.y)!, 100])
+            .range([plotHeight, 0]);
+
+        const color = d3
+            .scaleOrdinal(d3.schemeCategory10)
+            .domain(Object.keys(data));
+
+        const line = d3
+            .line<{ x: number; y: number }>()
+            .x((d) => xScale(d.x))
+            .y((d) => yScale(d.y));
+
+        for (const [label, points] of Object.entries(data)) {
+            const series = Object.entries(points).map(([x, y]) => ({
+                x: +x,
+                y: +y,
+            }));
+            g.append("path")
+                .datum(series)
+                .attr("fill", "none")
+                .attr("stroke", color(label)!)
+                .attr("stroke-width", 2)
+                .attr("d", line as any);
+
+            const lastPoint = series[series.length - 1];
+            const text = g
+                .append("text")
+                .attr("x", xScale(lastPoint.x) + 5)
+                .attr("y", yScale(lastPoint.y))
+                .attr("fill", color(label)!)
+                .attr("font-size", 12)
+                .attr("text-anchor", "start")
+                .text(label);
+            const textWidth = (
+                text.node() as SVGTextElement
+            ).getComputedTextLength();
+            const x = xScale(lastPoint.x) + 5;
+            if (x + textWidth > width - margin.right) {
+                text.attr("x", width - margin.right - textWidth - 5);
+            }
+        }
+
+        g.append("g")
+            .attr("transform", `translate(0,${plotHeight})`)
+            .call(
+                d3
+                    .axisBottom(xScale)
+                    .ticks(10)
+                    .tickFormat((d) => `${d}d`),
+            );
+
+        g.append("g").call(
+            d3
+                .axisLeft(yScale)
+                .ticks(10)
+                .tickFormat((d) => `${d}%`),
+        );
+
+        svg.append("text")
+            .attr("x", width / 2)
+            .attr("y", margin.top / 2)
+            .attr("text-anchor", "middle")
+            .attr("font-size", 18)
+            .attr("font-weight", "bold")
+            .text("Current stock market crash against major ones");
+    }, [data]);
+
+    return <svg ref={ref}></svg>;
+}
