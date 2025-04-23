@@ -20,8 +20,8 @@ export default function StockCrashChart({ data }: Props) {
         const svg = d3.select(ref.current);
         svg.selectAll("*").remove(); // Clear previous renders
 
-        const width = 800;
-        const height = 500;
+        const width = window.innerWidth * 0.9;
+        const height = window.innerHeight * 0.8;
         const margin = { top: 40, right: 40, bottom: 40, left: 60 };
 
         const plotWidth = width - margin.left - margin.right;
@@ -67,6 +67,8 @@ export default function StockCrashChart({ data }: Props) {
                 x: +x,
                 y: +y,
             }));
+            const sanitizedLabel = label.replace(/[^a-zA-Z0-9-_]/g, "-");
+            const labelId = `${sanitizedLabel}-${Math.random().toString(36).substr(2, 9)}`;
             g.append("path")
                 .datum(series)
                 .attr("fill", "none")
@@ -83,28 +85,37 @@ export default function StockCrashChart({ data }: Props) {
                                 ?.brighter(0.7)
                                 ?.toString() ?? color(label)!,
                         );
+                    g.select(`#label-${labelId}`)
+                        .style("visibility", "visible")
+                        .style("font-weight", "bold");
                 })
                 .on("mouseout", function() {
                     d3.select(this)
                         .attr("stroke-width", 2)
                         .attr("stroke", color(label)!);
+                    g.select(`#label-${labelId}`)
+                        .style("visibility", "hidden")
+                        .style("font-weight", "normal");
                 });
 
             const lastPoint = series[series.length - 1];
             const text = g
                 .append("text")
+                .attr("id", `label-${labelId}`)
                 .attr("x", xScale(lastPoint.x) + 5)
                 .attr("y", yScale(lastPoint.y))
                 .attr("fill", color(label)!)
-                .attr("font-size", 12)
+                .attr("font-size", 18)
+                .style("font-weight", "bold")
                 .attr("text-anchor", "start")
+                .style("visibility", "hidden")
                 .text(label);
             const textWidth = (
                 text.node() as SVGTextElement
             ).getComputedTextLength();
             const x = xScale(lastPoint.x) + 5;
             if (x + textWidth > width - margin.right) {
-                text.attr("x", width - margin.right - textWidth - 5);
+                text.attr("text-anchor", "end");
             }
         }
 
@@ -128,7 +139,7 @@ export default function StockCrashChart({ data }: Props) {
             .attr("x", width / 2)
             .attr("y", margin.top / 2)
             .attr("text-anchor", "middle")
-            .attr("font-size", 18)
+            .attr("font-size", 24)
             .attr("font-weight", "bold")
             .text("Current stock market crash against major ones");
     }, [data]);
