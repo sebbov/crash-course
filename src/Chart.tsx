@@ -58,6 +58,24 @@ export default function StockCrashChart({ data }: Props) {
             .scaleOrdinal(d3.schemeCategory10)
             .domain(Object.keys(data));
 
+        const hoverXLabel = g
+            .append("text")
+            .attr("y", plotHeight + 30)
+            .attr("text-anchor", "middle")
+            .attr("font-size", 12)
+            .style("fill", "gray")
+            .style("pointer-events", "none")
+            .style("display", "none");
+
+        const hoverYLabel = g
+            .append("text")
+            .attr("x", -30)
+            .attr("text-anchor", "end")
+            .attr("font-size", 12)
+            .style("fill", "gray")
+            .style("pointer-events", "none")
+            .style("display", "none");
+
         const line = d3
             .line<{ x: number; y: number }>()
             .x((d) => xScale(d.x))
@@ -76,6 +94,7 @@ export default function StockCrashChart({ data }: Props) {
                 .attr("stroke", color(label)!)
                 .attr("stroke-width", 2)
                 .attr("d", line)
+                .attr("pointer-events", "visibleStroke")
                 .on("mouseover", function() {
                     d3.select(this)
                         .attr("stroke-width", 4)
@@ -143,6 +162,26 @@ export default function StockCrashChart({ data }: Props) {
             .attr("font-size", 24)
             .attr("font-weight", "bold")
             .text("Current stock market crash against major ones");
+
+        const mouseMove = (event: any) => {
+            const [mouseX, mouseY] = d3.pointer(event);
+            const adjustedX = mouseX - margin.left;
+            const adjustedY = mouseY - margin.top;
+
+            hoverXLabel
+                .style("display", null)
+                .attr("x", adjustedX)
+                .text(`${xScale.invert(adjustedX).toFixed(0)}d`);
+
+            hoverYLabel
+                .style("display", null)
+                .attr("y", adjustedY)
+                .text(`${yScale.invert(adjustedY).toFixed(0)}%`);
+        };
+        svg.on("mousemove", mouseMove).on("mouseleave", () => {
+            hoverXLabel.style("display", "none");
+            hoverYLabel.style("display", "none");
+        });
 
         // Desktop zoom.
         // TODO: Mobile zoom.
