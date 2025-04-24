@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 
 type CrashData = {
     [label: string]: {
-        [day: string]: number; // y-values like 94.02 (% of ATH), keyed by days since ATH
+        // y-values like -12.3 (% drop from ATH), keyed by days since ATH.
+        [day: string]: number;
     };
 };
 
