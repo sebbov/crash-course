@@ -147,6 +147,9 @@ export default function Chart({ data }: Props) {
                 .attr("fill", labelToColor.get(label)!)
                 .attr("font-size", 18)
                 .style("font-weight", "bold")
+                .style("stroke", "white")
+                .style("stroke-width", "4px")
+                .style("paint-order", "stroke")
                 .attr("text-anchor", "start")
                 .style(
                     "visibility",
