@@ -25,6 +25,12 @@ function App() {
         <div className="modal-overlay">
           <div className="modal-content">
             <h2>Welcome to Crash Course</h2>
+            <p>
+              Crash course shows a chart of the S&P 500 index during historic
+              downturns, as well as for the current 2025 downturn, normalized to
+              their all-time-high (ATH). The y axis shows the drop since the ATH
+              and the x axis the number of days since the ATH.
+            </p>
             <p>Hover over chart lines to show their label.</p>
             <p>Zoom in the chart using your mouse wheel.</p>
             <p>
