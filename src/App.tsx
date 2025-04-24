@@ -42,7 +42,7 @@ function App() {
             Help
           </a>
           {" | "}
-          <a href="/privacy">Privacy</a>
+          <a href="/privacy.html">Privacy</a>
           {" | "}
           <a href="https://github.com/sebbov/crash-course">Source</a>
 
