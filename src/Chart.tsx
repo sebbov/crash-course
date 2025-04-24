@@ -11,6 +11,8 @@ type Props = {
     data: CrashData;
 };
 
+const currentLabel = "2025 (Current)";
+
 export default function Chart({ data }: Props) {
     const ref = useRef<SVGSVGElement | null>(null);
     const [zoom, setZoom] = useState(1.0);
@@ -55,9 +57,15 @@ export default function Chart({ data }: Props) {
             .domain([Math.floor(minY - yPadding), Math.ceil(maxY + yPadding)])
             .range([plotHeight, 0]);
 
+        const labels = Object.keys(data);
         const color = d3
-            .scaleOrdinal(d3.schemeCategory10)
-            .domain(Object.keys(data));
+            .scaleSequential<string>()
+            .domain([0, labels.length - 1])
+            .interpolator(d3.interpolatePlasma);
+        const labelToColor = new Map(
+            labels.map((label, i) => [label, color(i)]),
+        );
+        labelToColor.set(currentLabel, "#e31a1c");
 
         const hoverXLabel = g
             .append("text")
@@ -93,8 +101,8 @@ export default function Chart({ data }: Props) {
             g.append("path")
                 .datum(visibleSeries)
                 .attr("fill", "none")
-                .attr("stroke", color(label)!)
-                .attr("stroke-width", 1)
+                .attr("stroke", labelToColor.get(label)!)
+                .attr("stroke-width", label === currentLabel ? 3 : 1)
                 .attr("d", line)
                 .attr("pointer-events", "visibleStroke")
                 .on("mouseover", function() {
@@ -103,22 +111,32 @@ export default function Chart({ data }: Props) {
                         .attr(
                             "stroke",
                             d3
-                                .color(color(label)!)
+                                .color(labelToColor.get(label)!)
                                 ?.brighter(0.7)
-                                ?.toString() ?? color(label)!,
+                                ?.toString() ?? labelToColor.get(label)!,
                         );
                     g.select(`#label-${labelId}`)
                         .style("visibility", "visible")
                         .style("font-weight", "bold");
                 })
                 .on("mouseout", function() {
-                    d3.select(this)
-                        .attr("stroke-width", 1)
-                        .attr("stroke", color(label)!);
-                    g.select(`#label-${labelId}`)
-                        .style("visibility", "hidden")
-                        .style("font-weight", "normal");
+                    if (label !== currentLabel) {
+                        d3.select(this)
+                            .attr("stroke-width", 1)
+                            .attr("stroke", labelToColor.get(label)!);
+                        g.select(`#label-${labelId}`)
+                            .style("visibility", "hidden")
+                            .style("font-weight", "normal");
+                    }
                 });
+
+            if (label === currentLabel) {
+                g.select(`#label-${labelId}`)
+                    .style("visibility", "visible")
+                    .style("font-weight", "bold");
+
+                g.select(`[id='${labelId}']`).raise();
+            }
 
             const lastPoint = visibleSeries[visibleSeries.length - 1];
             const text = g
@@ -126,11 +144,14 @@ export default function Chart({ data }: Props) {
                 .attr("id", `label-${labelId}`)
                 .attr("x", xScale(lastPoint.x) + 5)
                 .attr("y", yScale(lastPoint.y))
-                .attr("fill", color(label)!)
+                .attr("fill", labelToColor.get(label)!)
                 .attr("font-size", 18)
                 .style("font-weight", "bold")
                 .attr("text-anchor", "start")
-                .style("visibility", "hidden")
+                .style(
+                    "visibility",
+                    label === currentLabel ? "visible" : "hidden",
+                )
                 .text(label);
             const textWidth = (
                 text.node() as SVGTextElement
