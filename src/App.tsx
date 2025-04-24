@@ -1,11 +1,23 @@
 import "./App.css";
 import Chart from "./Chart";
 import crashData from "./crash_data.json";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Modal.css"; // for custom styling
 
 function App() {
   const [showModal, setShowModal] = useState(true);
+
+  useEffect(() => {
+    const handleKeyPress = (event: any) => {
+      if (event.key === "Enter") {
+        setShowModal(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, []);
 
   return (
     <>
