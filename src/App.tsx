@@ -13,10 +13,8 @@ function App() {
         <div className="modal-overlay">
           <div className="modal-content">
             <h2>Welcome to Crash Course</h2>
-            <br />
             <p>Hover over chart lines to show their label.</p>
             <p>Zoom in the chart using your mouse wheel.</p>
-            <br />
             <p>
               For background see this{" "}
               <a href="https://www.reddit.com/r/dataisbeautiful/comments/1k2i027/current_stock_market_crash_against_major_ones_oc/">
@@ -24,7 +22,6 @@ function App() {
               </a>
               .
             </p>
-            <br />
             <p>
               Original concept and Python implementation by @resende451 on
               Twitter (
@@ -48,6 +45,8 @@ function App() {
           <a href="/privacy">Privacy</a>
           {" | "}
           <a href="https://github.com/sebbov/crash-course">Source</a>
+
+          <p>&copy; 2025 Max Boving - All rights reserved.</p>
         </footer>
       </div>
     </>

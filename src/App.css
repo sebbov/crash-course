@@ -1,13 +1,22 @@
 #root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   margin: 0;
   padding: 0;
   text-align: center;
 }
 
+p {
+  padding: 10px;
+}
+
 footer {
+  margin-top: auto;
   color: #555;
   text-align: center;
   font-size: 0.9rem;
+  padding: 1rem 0;
 }
 
 footer a {
