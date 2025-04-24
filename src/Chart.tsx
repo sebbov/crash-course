@@ -44,14 +44,16 @@ export default function StockCrashChart({ data }: Props) {
 
         const flatData = allSeries.flat();
 
-        const xScale = d3
-            .scaleLinear()
-            .domain([0, Math.round(d3.max(flatData, (d) => d.x)! * zoom)])
-            .range([0, plotWidth]);
-
+        const maxX = Math.round(d3.max(flatData, (d) => d.x)! * zoom);
+        const visibleData = flatData.filter((d) => d.x <= maxX);
+        const xScale = d3.scaleLinear().domain([0, maxX]).range([0, plotWidth]);
+        const minY = d3.min(visibleData, (d) => d.y)!;
+        console.log(`minY: ${minY}`);
+        const maxY = d3.max(visibleData, (d) => d.y)!;
+        const yPadding = (maxY - minY) * 0.05;
         const yScale = d3
             .scaleLinear()
-            .domain([Math.round(d3.min(flatData, (d) => d.y)! * zoom), 100])
+            .domain([Math.floor(minY - yPadding), Math.ceil(maxY + yPadding)])
             .range([plotHeight, 0]);
 
         const color = d3
@@ -86,10 +88,11 @@ export default function StockCrashChart({ data }: Props) {
                 x: +x,
                 y: +y,
             }));
+            const visibleSeries = series.filter((d) => d.x <= maxX);
             const sanitizedLabel = label.replace(/[^a-zA-Z0-9-_]/g, "-");
             const labelId = `${sanitizedLabel}-${Math.random().toString(36).substr(2, 9)}`;
             g.append("path")
-                .datum(series)
+                .datum(visibleSeries)
                 .attr("fill", "none")
                 .attr("stroke", color(label)!)
                 .attr("stroke-width", 2)
@@ -118,7 +121,7 @@ export default function StockCrashChart({ data }: Props) {
                         .style("font-weight", "normal");
                 });
 
-            const lastPoint = series[series.length - 1];
+            const lastPoint = visibleSeries[visibleSeries.length - 1];
             const text = g
                 .append("text")
                 .attr("id", `label-${labelId}`)
