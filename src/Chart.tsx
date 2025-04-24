@@ -161,16 +161,27 @@ export default function Chart({ data }: Props) {
             const [mouseX, mouseY] = d3.pointer(event);
             const adjustedX = mouseX - margin.left;
             const adjustedY = mouseY - margin.top;
+            const xVal = xScale.invert(adjustedX);
+            const yVal = yScale.invert(adjustedY);
 
-            hoverXLabel
-                .style("display", null)
-                .attr("x", adjustedX)
-                .text(`${xScale.invert(adjustedX).toFixed(0)}d`);
-
-            hoverYLabel
-                .style("display", null)
-                .attr("y", adjustedY)
-                .text(`${yScale.invert(adjustedY).toFixed(0)}%`);
+            const [xMin, xMax] = xScale.domain();
+            if (xVal >= xMin && xVal <= xMax) {
+                hoverXLabel
+                    .style("display", null)
+                    .attr("x", adjustedX)
+                    .text(`${xVal.toFixed(0)}d`);
+            } else {
+                hoverXLabel.style("display", "none");
+            }
+            const [yMin, yMax] = yScale.domain();
+            if (yVal >= yMin && yVal <= yMax) {
+                hoverYLabel
+                    .style("display", null)
+                    .attr("y", adjustedY)
+                    .text(`${yVal.toFixed(0)}%`);
+            } else {
+                hoverYLabel.style("display", "none");
+            }
         }).on("mouseleave", () => {
             hoverXLabel.style("display", "none");
             hoverYLabel.style("display", "none");
