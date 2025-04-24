@@ -99,15 +99,17 @@ export default function Chart({ data }: Props) {
             const visibleSeries = series.filter((d) => d.x <= maxX);
             const sanitizedLabel = label.replace(/[^a-zA-Z0-9-_]/g, "-");
             const labelId = `${sanitizedLabel}-${Math.random().toString(36).substr(2, 9)}`;
+
+            // Add a wider transparent hover path first.
             g.append("path")
                 .datum(visibleSeries)
                 .attr("fill", "none")
-                .attr("stroke", labelToColor.get(label)!)
-                .attr("stroke-width", label === currentLabel ? 3 : 1)
+                .attr("stroke", "transparent")
+                .attr("stroke-width", 10) // Wider for easier hover.
                 .attr("d", line)
-                .attr("pointer-events", "visibleStroke")
+                .attr("pointer-events", "stroke")
                 .on("mouseover", function() {
-                    d3.select(this)
+                    d3.select(this.nextSibling as SVGPathElement) // Targets the actual line.
                         .attr("stroke-width", 3)
                         .attr(
                             "stroke",
@@ -122,7 +124,7 @@ export default function Chart({ data }: Props) {
                 })
                 .on("mouseout", function() {
                     if (label !== currentLabel) {
-                        d3.select(this)
+                        d3.select(this.nextSibling as SVGPathElement)
                             .attr("stroke-width", 1)
                             .attr("stroke", labelToColor.get(label)!);
                         g.select(`#label-${labelId}`)
@@ -130,6 +132,16 @@ export default function Chart({ data }: Props) {
                             .style("font-weight", "normal");
                     }
                 });
+
+            // Actual visible line.
+            g.append("path")
+                .datum(visibleSeries)
+                .attr("fill", "none")
+                .attr("stroke", labelToColor.get(label)!)
+                .attr("stroke-width", label === currentLabel ? 3 : 1)
+                .attr("d", line)
+                // Prevent interference with the hover path.
+                .attr("pointer-events", "none");
 
             if (label === currentLabel) {
                 g.select(`#label-${labelId}`)
