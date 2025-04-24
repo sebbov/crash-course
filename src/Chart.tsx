@@ -219,7 +219,12 @@ export default function Chart({ data }: Props) {
                 if (event.deltaY != 0) {
                     // Ensure an actual scroll event.
                     event.preventDefault();
-                    setZoom(Math.min(1.0, zoom * (1 + event.deltaY / 200)));
+                    setZoom(
+                        Math.max(
+                            0.05,
+                            Math.min(1.0, zoom * (1 + event.deltaY / 200)),
+                        ),
+                    );
                 }
             },
             { passive: false },
