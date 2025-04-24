@@ -12,7 +12,9 @@
         dataLayer.push(arguments);
       }
       gtag("js", new Date());
-      gtag("config", "G-5SYMTNZET5");
+      gtag("config", "G-5SYMTNZET5", {
+        anonymize_ip: true,
+      });
     </script>
     <meta charset="UTF-8" />
     <!-- TODO: update icon -->
@@ -24,4 +26,7 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
+  <footer>
+    <a href="/privacy.html">privacy</a>
+  </footer>
 </html>
