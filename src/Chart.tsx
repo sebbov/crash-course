@@ -25,7 +25,7 @@ export default function Chart({ data }: Props) {
         svg.selectAll("*").remove(); // Clear previous renders
 
         const width = window.innerWidth;
-        const height = window.innerHeight * 0.8;
+        const height = window.innerHeight * 0.85;
         const margin = { top: 10, right: 20, bottom: 30, left: 80 };
 
         const plotWidth = width - margin.left - margin.right;
