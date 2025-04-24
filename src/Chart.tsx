@@ -23,9 +23,9 @@ export default function Chart({ data }: Props) {
         const svg = d3.select(ref.current);
         svg.selectAll("*").remove(); // Clear previous renders
 
-        const width = window.innerWidth * 0.9;
-        const height = window.innerHeight * 0.8;
-        const margin = { top: 40, right: 40, bottom: 40, left: 60 };
+        const width = window.innerWidth;
+        const height = window.innerHeight * 0.9;
+        const margin = { top: 10, right: 20, bottom: 30, left: 80 };
 
         const plotWidth = width - margin.left - margin.right;
         const plotHeight = height - margin.top - margin.bottom;
@@ -78,7 +78,7 @@ export default function Chart({ data }: Props) {
 
         const hoverYLabel = g
             .append("text")
-            .attr("x", -30)
+            .attr("x", -35)
             .attr("text-anchor", "end")
             .attr("font-size", 12)
             .style("fill", "gray")
