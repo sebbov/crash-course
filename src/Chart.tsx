@@ -11,7 +11,7 @@ type Props = {
     data: CrashData;
 };
 
-export default function StockCrashChart({ data }: Props) {
+export default function Chart({ data }: Props) {
     const ref = useRef<SVGSVGElement | null>(null);
     const [zoom, setZoom] = useState(1.0);
 
@@ -48,7 +48,6 @@ export default function StockCrashChart({ data }: Props) {
         const visibleData = flatData.filter((d) => d.x <= maxX);
         const xScale = d3.scaleLinear().domain([0, maxX]).range([0, plotWidth]);
         const minY = d3.min(visibleData, (d) => d.y)!;
-        console.log(`minY: ${minY}`);
         const maxY = d3.max(visibleData, (d) => d.y)!;
         const yPadding = (maxY - minY) * 0.05;
         const yScale = d3
@@ -95,12 +94,12 @@ export default function StockCrashChart({ data }: Props) {
                 .datum(visibleSeries)
                 .attr("fill", "none")
                 .attr("stroke", color(label)!)
-                .attr("stroke-width", 2)
+                .attr("stroke-width", 1)
                 .attr("d", line)
                 .attr("pointer-events", "visibleStroke")
                 .on("mouseover", function() {
                     d3.select(this)
-                        .attr("stroke-width", 4)
+                        .attr("stroke-width", 3)
                         .attr(
                             "stroke",
                             d3
@@ -114,7 +113,7 @@ export default function StockCrashChart({ data }: Props) {
                 })
                 .on("mouseout", function() {
                     d3.select(this)
-                        .attr("stroke-width", 2)
+                        .attr("stroke-width", 1)
                         .attr("stroke", color(label)!);
                     g.select(`#label-${labelId}`)
                         .style("visibility", "hidden")
@@ -158,15 +157,7 @@ export default function StockCrashChart({ data }: Props) {
                 .tickFormat((d) => `${d}%`),
         );
 
-        svg.append("text")
-            .attr("x", width / 2)
-            .attr("y", margin.top / 2)
-            .attr("text-anchor", "middle")
-            .attr("font-size", 24)
-            .attr("font-weight", "bold")
-            .text("Current stock market crash against major ones");
-
-        const mouseMove = (event: any) => {
+        svg.on("mousemove", (event: any) => {
             const [mouseX, mouseY] = d3.pointer(event);
             const adjustedX = mouseX - margin.left;
             const adjustedY = mouseY - margin.top;
@@ -180,8 +171,7 @@ export default function StockCrashChart({ data }: Props) {
                 .style("display", null)
                 .attr("y", adjustedY)
                 .text(`${yScale.invert(adjustedY).toFixed(0)}%`);
-        };
-        svg.on("mousemove", mouseMove).on("mouseleave", () => {
+        }).on("mouseleave", () => {
             hoverXLabel.style("display", "none");
             hoverYLabel.style("display", "none");
         });

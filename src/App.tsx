@@ -4,9 +4,10 @@ import crashData from "./crash_data.json";
 
 function App() {
   return (
-    <div style={{ padding: "2rem" }}>
+    <>
+      <h2>Current stock market crash against major ones</h2>
       <Chart data={crashData} />
-    </div>
+    </>
   );
 }
 
