@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type CrashData = {
     [label: string]: {
@@ -13,6 +13,7 @@ type Props = {
 
 export default function StockCrashChart({ data }: Props) {
     const ref = useRef<SVGSVGElement | null>(null);
+    const [zoom, setZoom] = useState(1.0);
 
     useEffect(() => {
         if (!ref.current) return;
@@ -45,12 +46,12 @@ export default function StockCrashChart({ data }: Props) {
 
         const xScale = d3
             .scaleLinear()
-            .domain([0, d3.max(flatData, (d) => d.x)!])
+            .domain([0, Math.round(d3.max(flatData, (d) => d.x)! * zoom)])
             .range([0, plotWidth]);
 
         const yScale = d3
             .scaleLinear()
-            .domain([d3.min(flatData, (d) => d.y)!, 100])
+            .domain([Math.round(d3.min(flatData, (d) => d.y)! * zoom), 100])
             .range([plotHeight, 0]);
 
         const color = d3
@@ -142,7 +143,21 @@ export default function StockCrashChart({ data }: Props) {
             .attr("font-size", 24)
             .attr("font-weight", "bold")
             .text("Current stock market crash against major ones");
-    }, [data]);
+
+        // Desktop zoom.
+        // TODO: Mobile zoom.
+        svg.on(
+            "wheel",
+            (event) => {
+                if (event.deltaY != 0) {
+                    // Ensure an actual scroll event.
+                    event.preventDefault();
+                    setZoom(Math.min(1.0, zoom * (1 + event.deltaY / 200)));
+                }
+            },
+            { passive: false },
+        );
+    }, [data, zoom]);
 
     return <svg ref={ref}></svg>;
 }
