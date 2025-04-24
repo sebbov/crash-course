@@ -35,11 +35,12 @@ function App() {
               .
             </p>
             <p>
-              Original concept and Python implementation by @resende451 on
-              Twitter (
-              <a href="https://github.com/resendedaniel/drawdown">Source</a>).
-              This site enhances the original by adding interactivity, daily
-              updates, and additional features.
+              Original concept and{" "}
+              <a href="https://github.com/resendedaniel/drawdown">
+                implementation
+              </a>{" "}
+              by <a href="http://x.com/resende451">@resende451</a>. Crash Course
+              adds interactivity, daily updates, and other features.
             </p>
             <button onClick={() => setShowModal(false)}>OK</button>
           </div>
