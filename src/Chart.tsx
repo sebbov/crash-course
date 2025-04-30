@@ -12,7 +12,7 @@ type Props = {
     data: CrashData;
 };
 
-const currentLabel = "2025 (Current)";
+const currentLabel = "2025-02-19"; // "2025 (Current)";
 
 export default function Chart({ data }: Props) {
     const ref = useRef<SVGSVGElement | null>(null);
@@ -62,7 +62,7 @@ export default function Chart({ data }: Props) {
         const color = d3
             .scaleSequential<string>()
             .domain([0, labels.length - 1])
-            .interpolator(d3.interpolatePlasma);
+            .interpolator(d3.interpolateViridis);
         const labelToColor = new Map(
             labels.map((label, i) => [label, color(i)]),
         );

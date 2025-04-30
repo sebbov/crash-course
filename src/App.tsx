@@ -29,7 +29,7 @@ function App() {
               Crash Course shows a chart of the S&P 500 index during historic
               downturns, as well as for the current 2025 downturn, normalized to
               their all-time-high (ATH) leading to the downturn. The y axis
-              shows the drop since the ATH and the x axis the number of days
+              shows the drop from the ATH and the x axis the number of days
               since the ATH.
             </p>
             <p>Hover over chart lines to show their label.</p>
