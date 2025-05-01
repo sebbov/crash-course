@@ -18,13 +18,13 @@ export default function Chart({ data }: Props) {
     const ref = useRef<SVGSVGElement | null>(null);
     const [zoom, setZoom] = useState(1.0);
 
-    useEffect(() => {
+    const drawChart = () => {
         if (!ref.current) return;
 
         const svg = d3.select(ref.current);
         svg.selectAll("*").remove(); // Clear previous renders
 
-        const width = window.innerWidth;
+        const width = ref.current.parentElement!.clientWidth;
         const height = window.innerHeight * 0.85;
         const margin = { top: 10, right: 20, bottom: 30, left: 80 };
 
@@ -242,7 +242,18 @@ export default function Chart({ data }: Props) {
             },
             { passive: false },
         );
-    }, [data, zoom]);
+    };
+
+    useEffect(() => {
+        drawChart();
+
+        const observer = new ResizeObserver(drawChart);
+        if (ref.current?.parentElement) {
+            observer.observe(ref.current.parentElement);
+        }
+
+        return () => observer.disconnect();
+    }, [drawChart, data, zoom]);
 
     return <svg ref={ref}></svg>;
 }

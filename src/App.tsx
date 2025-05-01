@@ -3,9 +3,11 @@ import Chart from "./Chart";
 import crashData from "./crash_data.json";
 import { useEffect, useState } from "react";
 import "./Modal.css"; // for custom styling
+import { SlidersHorizontal } from "lucide-react";
 
 function App() {
   const [showModal, setShowModal] = useState(true);
+  const [showFilter, setShowFilter] = useState(false);
 
   useEffect(() => {
     const handleKeyPress = (event: any) => {
@@ -54,19 +56,34 @@ function App() {
         </div>
       )}
 
-      <div className={showModal ? "blurred" : ""}>
-        <h2>Current stock market crash against major ones</h2>
-        <Chart data={crashData} />
-        <footer>
-          <a onClick={() => setShowModal(true)} style={{ cursor: "pointer" }}>
-            Help
-          </a>
-          {" | "}
-          <a href="/privacy.html">Privacy</a>
-          {" | "}
-          <a href="https://github.com/sebbov/crash-course">Source</a>
-        </footer>
+      <div className={`app-wrapper ${showModal ? "blurred" : ""}`}>
+        <button
+          className="filter-button"
+          onClick={() => setShowFilter(!showFilter)}
+        >
+          <SlidersHorizontal className="w-5 h-5" />
+        </button>
+        <div className={`main-container ${showFilter ? "with-filter" : ""}`}>
+          <div className="content">
+            <h2>Current stock market crash against major ones</h2>
+            <Chart data={crashData} />
+            <footer>
+              <a
+                onClick={() => setShowModal(true)}
+                style={{ cursor: "pointer" }}
+              >
+                Help
+              </a>
+              {" | "}
+              <a href="/privacy.html">Privacy</a>
+              {" | "}
+              <a href="https://github.com/sebbov/crash-course">Source</a>
+            </footer>
+          </div>
+        </div>
       </div>
+
+      {showFilter && <div className="filter-panel"></div>}
     </>
   );
 }
