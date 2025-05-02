@@ -4,10 +4,23 @@ import crashData from "./crash_data.json";
 import { useEffect, useState } from "react";
 import "./Modal.css"; // for custom styling
 import { SlidersHorizontal } from "lucide-react";
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
 
 function App() {
   const [showModal, setShowModal] = useState(true);
   const [showFilter, setShowFilter] = useState(false);
+
+  const crashEntries = Object.entries(crashData);
+  const allDays = crashEntries.map(([_, series]) => Object.keys(series).length);
+  const allMinDeltas = crashEntries.map(([_, series]) =>
+    Math.floor(Math.min(...Object.values(series))),
+  );
+
+  const [minDays, setMinDays] = useState(Math.min(...allDays));
+  const [maxDays, setMaxDays] = useState(Math.max(...allDays));
+  const [minMinDelta, setMinMinDelta] = useState(Math.min(...allMinDeltas));
+  const [maxMinDelta, setMaxMinDelta] = useState(Math.max(...allMinDeltas));
 
   useEffect(() => {
     const handleKeyPress = (event: any) => {
@@ -55,7 +68,6 @@ function App() {
           </div>
         </div>
       )}
-
       <div className={`app-wrapper ${showModal ? "blurred" : ""}`}>
         <button
           className="filter-button"
@@ -66,7 +78,13 @@ function App() {
         <div className={`main-container ${showFilter ? "with-filter" : ""}`}>
           <div className="content">
             <h2>Current stock market crash against major ones</h2>
-            <Chart data={crashData} />
+            <Chart
+              data={crashData}
+              minDays={minDays}
+              maxDays={maxDays}
+              minMinDelta={minMinDelta}
+              maxMinDelta={maxMinDelta}
+            />
             <footer>
               <a
                 onClick={() => setShowModal(true)}
@@ -82,8 +100,45 @@ function App() {
           </div>
         </div>
       </div>
-
-      {showFilter && <div className="filter-panel"></div>}
+      {showFilter && (
+        <div className="filter-panel">
+          <div className="filter-slider">
+            <Slider
+              range
+              allowCross={false}
+              min={Math.min(...allDays)}
+              max={Math.max(...allDays)}
+              value={[minDays, maxDays]}
+              onChange={(value) => {
+                const [min, max] = value as number[];
+                setMinDays(min);
+                setMaxDays(max);
+              }}
+            />
+            <div className="slider-values">
+              <span>Duration: {minDays}</span> - <span>{maxDays} days</span>
+            </div>
+          </div>
+          <br />
+          <div className="filter-slider">
+            <Slider
+              range
+              allowCross={false}
+              min={Math.min(...allMinDeltas)}
+              max={Math.max(...allMinDeltas)}
+              value={[minMinDelta, maxMinDelta]}
+              onChange={(value) => {
+                const [min, max] = value as number[];
+                setMinMinDelta(min);
+                setMaxMinDelta(max);
+              }}
+            />
+            <div className="slider-values">
+              <span>Drop: {minMinDelta}%</span> - <span>{maxMinDelta}%</span>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
