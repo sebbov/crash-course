@@ -16,8 +16,6 @@ type Props = {
     maxMinDelta: number;
 };
 
-const currentLabel = "2025-02-19"; // "2025 (Current)";
-
 function filterData(
     data: CrashData,
     minDays: number,
@@ -72,9 +70,10 @@ export default function Chart({
                 .append("g")
                 .attr("transform", `translate(${margin.left},${margin.top})`);
 
-            console.log(
-                `SEB: ${minDays} ${maxDays} ${minMinDelta} ${maxMinDelta}`,
-            );
+            const allLabels = Object.keys(data).sort();
+            const currentLabel =
+                allLabels.length > 0 ? allLabels[allLabels.length - 1] : "";
+
             const filteredData = filterData(
                 data,
                 minDays,
