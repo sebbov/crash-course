@@ -27,6 +27,9 @@ function App() {
       if (event.key === "Enter") {
         setShowModal(false);
       }
+      if (event.key === "f") {
+        setShowFilter((prev) => !prev);
+      }
     };
     window.addEventListener("keydown", handleKeyPress);
     return () => {
@@ -71,7 +74,7 @@ function App() {
       <div className={`app-wrapper ${showModal ? "blurred" : ""}`}>
         <button
           className="filter-button"
-          onClick={() => setShowFilter(!showFilter)}
+          onClick={() => setShowFilter((prev) => !prev)}
         >
           <SlidersHorizontal className="w-5 h-5" />
         </button>
