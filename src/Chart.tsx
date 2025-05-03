@@ -245,12 +245,14 @@ export default function Chart({
                     g.select(`[id='${labelId}']`).raise();
                 }
 
-                const lastPoint = visibleSeries[visibleSeries.length - 1];
+                const maxDropPoint = visibleSeries.reduce((min, point) =>
+                    point.y < min.y ? point : min,
+                );
                 const text = g
                     .append("text")
                     .attr("id", `label-${labelId}`)
-                    .attr("x", xScale(lastPoint.x) + 5)
-                    .attr("y", yScale(lastPoint.y))
+                    .attr("x", xScale(maxDropPoint.x) + 5)
+                    .attr("y", yScale(maxDropPoint.y))
                     .attr("fill", labelToColor.get(label)!)
                     .attr("font-size", 18)
                     .style("font-weight", "bold")
@@ -266,7 +268,7 @@ export default function Chart({
                 const textWidth = (
                     text.node() as SVGTextElement
                 ).getComputedTextLength();
-                const x = xScale(lastPoint.x) + 5;
+                const x = xScale(maxDropPoint.x) + 5;
                 if (x + textWidth > width - margin.right) {
                     text.attr("text-anchor", "end");
                 }
