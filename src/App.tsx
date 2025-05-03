@@ -4,8 +4,7 @@ import crashData from "./crash_data.json";
 import { useEffect, useState } from "react";
 import "./Modal.css"; // for custom styling
 import { SlidersHorizontal } from "lucide-react";
-import Slider from "rc-slider";
-import "rc-slider/assets/index.css";
+import Filter from "./Filter";
 
 function App() {
   const [showModal, setShowModal] = useState(true);
@@ -103,44 +102,20 @@ function App() {
           </div>
         </div>
       </div>
+
       {showFilter && (
-        <div className="filter-panel">
-          <div className="filter-slider">
-            <Slider
-              range
-              allowCross={false}
-              min={Math.min(...allDays)}
-              max={Math.max(...allDays)}
-              value={[minDays, maxDays]}
-              onChange={(value) => {
-                const [min, max] = value as number[];
-                setMinDays(min);
-                setMaxDays(max);
-              }}
-            />
-            <div className="slider-values">
-              <span>Duration: {minDays}</span> - <span>{maxDays} days</span>
-            </div>
-          </div>
-          <br />
-          <div className="filter-slider">
-            <Slider
-              range
-              allowCross={false}
-              min={Math.min(...allMinDeltas)}
-              max={Math.max(...allMinDeltas)}
-              value={[minMinDelta, maxMinDelta]}
-              onChange={(value) => {
-                const [min, max] = value as number[];
-                setMinMinDelta(min);
-                setMaxMinDelta(max);
-              }}
-            />
-            <div className="slider-values">
-              <span>Drop: {minMinDelta}%</span> - <span>{maxMinDelta}%</span>
-            </div>
-          </div>
-        </div>
+        <Filter
+          allDays={allDays}
+          allMinDeltas={allMinDeltas}
+          minDays={minDays}
+          maxDays={maxDays}
+          minMinDelta={minMinDelta}
+          maxMinDelta={maxMinDelta}
+          setMinDays={setMinDays}
+          setMaxDays={setMaxDays}
+          setMinMinDelta={setMinMinDelta}
+          setMaxMinDelta={setMaxMinDelta}
+        />
       )}
     </>
   );
