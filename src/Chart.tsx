@@ -8,13 +8,13 @@ type CrashData = {
     };
 };
 
-type Props = {
-    data: CrashData;
-    minDays: number;
-    maxDays: number;
-    minMinDelta: number;
-    maxMinDelta: number;
-};
+function debounce<T extends (...args: any[]) => void>(fn: T, delay: number): T {
+    let timeout: ReturnType<typeof setTimeout>;
+    return function(...args: any[]) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => fn(...args), delay);
+    } as T;
+}
 
 function filterData(
     data: CrashData,
@@ -39,6 +39,14 @@ function filterData(
     }
     return filtered;
 }
+
+type Props = {
+    data: CrashData;
+    minDays: number;
+    maxDays: number;
+    minMinDelta: number;
+    maxMinDelta: number;
+};
 
 export default function Chart({
     data,
@@ -277,18 +285,22 @@ export default function Chart({
 
             // Desktop zoom.
             // TODO: Mobile zoom.
+            const zoomHandler = debounce((deltaY: number) => {
+                setZoom((prev) =>
+                    Math.max(
+                        0.05,
+                        Math.min(1.0, prev * (deltaY < 0 ? 1.02 : 0.98)),
+                    ),
+                );
+            }, 2);
+
             svg.on(
                 "wheel",
                 (event) => {
                     if (event.deltaY != 0) {
                         // Ensure an actual scroll event.
                         event.preventDefault();
-                        setZoom(
-                            Math.max(
-                                0.05,
-                                Math.min(1.0, zoom * (1 + event.deltaY / 200)),
-                            ),
-                        );
+                        zoomHandler(event.deltaY);
                     }
                 },
                 { passive: false },
