@@ -94,7 +94,7 @@ footer a:hover {
   background-color: white;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   z-index: 998;
-  padding: 1rem;
+  padding: 3rem;
   padding-top: 5rem;
   box-sizing: border-box;
 }
