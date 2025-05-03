@@ -15,11 +15,17 @@ function App() {
   const allMinDeltas = crashEntries.map(([_, series]) =>
     Math.floor(Math.min(...Object.values(series))),
   );
+  const allYears = Object.keys(crashData).map((label) => {
+    const yearStr = label.split(" ")[0].split("-")[0];
+    return parseInt(yearStr, 10);
+  });
 
   const [minDays, setMinDays] = useState(Math.min(...allDays));
   const [maxDays, setMaxDays] = useState(Math.max(...allDays));
   const [minMinDelta, setMinMinDelta] = useState(Math.min(...allMinDeltas));
   const [maxMinDelta, setMaxMinDelta] = useState(Math.max(...allMinDeltas));
+  const [minYear, setMinYear] = useState(Math.min(...allYears));
+  const [maxYear, setMaxYear] = useState(Math.max(...allYears));
 
   useEffect(() => {
     const handleKeyPress = (event: any) => {
@@ -86,6 +92,8 @@ function App() {
               maxDays={maxDays}
               minMinDelta={minMinDelta}
               maxMinDelta={maxMinDelta}
+              minYear={minYear}
+              maxYear={maxYear}
             />
             <footer>
               <a
@@ -107,14 +115,19 @@ function App() {
         <Filter
           allDays={allDays}
           allMinDeltas={allMinDeltas}
+          allYears={allYears}
           minDays={minDays}
           maxDays={maxDays}
           minMinDelta={minMinDelta}
           maxMinDelta={maxMinDelta}
+          minYear={minYear}
+          maxYear={maxYear}
           setMinDays={setMinDays}
           setMaxDays={setMaxDays}
           setMinMinDelta={setMinMinDelta}
           setMaxMinDelta={setMaxMinDelta}
+          setMinYear={setMinYear}
+          setMaxYear={setMaxYear}
         />
       )}
     </>

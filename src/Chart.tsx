@@ -22,17 +22,23 @@ function filterData(
     maxDays: number,
     minMinDelta: number,
     maxMinDelta: number,
+    minYear: number,
+    maxYear: number,
 ): CrashData {
     const filtered: CrashData = {};
     for (const [label, series] of Object.entries(data)) {
         const dayCount = Object.keys(series).length;
         const values = Object.values(series);
         const minDelta = Math.min(...values);
+        const yearStr = label.split(" ")[0].split("-")[0]; // e.g., "2020" from "2020-03-01 ..."
+        const year = parseInt(yearStr, 10);
         if (
             dayCount >= minDays &&
             dayCount <= maxDays &&
             minDelta >= minMinDelta &&
-            minDelta <= maxMinDelta
+            minDelta <= maxMinDelta &&
+            year >= minYear &&
+            year <= maxYear
         ) {
             filtered[label] = series;
         }
@@ -46,6 +52,8 @@ type Props = {
     maxDays: number;
     minMinDelta: number;
     maxMinDelta: number;
+    minYear: number;
+    maxYear: number;
 };
 
 export default function Chart({
@@ -54,6 +62,8 @@ export default function Chart({
     maxDays,
     minMinDelta,
     maxMinDelta,
+    minYear,
+    maxYear,
 }: Props) {
     const ref = useRef<SVGSVGElement | null>(null);
     const [zoom, setZoom] = useState(1.0);
@@ -88,6 +98,8 @@ export default function Chart({
                 maxDays,
                 minMinDelta,
                 maxMinDelta,
+                minYear,
+                maxYear,
             );
             const allSeries = Object.entries(filteredData).map(
                 ([label, points]) =>
@@ -315,7 +327,16 @@ export default function Chart({
         }
 
         return () => observer.disconnect();
-    }, [data, zoom, minDays, maxDays, minMinDelta, maxMinDelta]);
+    }, [
+        data,
+        zoom,
+        minDays,
+        maxDays,
+        minMinDelta,
+        maxMinDelta,
+        minYear,
+        maxYear,
+    ]);
 
     return <svg ref={ref}></svg>;
 }
