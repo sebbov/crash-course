@@ -24,9 +24,14 @@ function filterData(
     maxMinDelta: number,
     minYear: number,
     maxYear: number,
+    keepLabel?: string,
 ): CrashData {
     const filtered: CrashData = {};
     for (const [label, series] of Object.entries(data)) {
+        if (label === keepLabel) {
+            filtered[label] = series;
+            continue;
+        }
         const dayCount = Object.keys(series).length;
         const values = Object.values(series);
         const minDelta = Math.min(...values);
@@ -100,6 +105,7 @@ export default function Chart({
                 maxMinDelta,
                 minYear,
                 maxYear,
+                currentLabel,
             );
             const allSeries = Object.entries(filteredData).map(
                 ([label, points]) =>
