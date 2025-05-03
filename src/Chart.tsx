@@ -135,15 +135,32 @@ export default function Chart({
                 ])
                 .range([plotHeight, 0]);
 
-            const labels = Object.keys(filteredData);
-            const color = d3
+            const entries = Object.entries(filteredData);
+            const scoredEntries = entries.map(([label, series]) => {
+                const duration = Object.keys(series).length;
+                const minDrop = Math.min(...Object.values(series));
+                const score = duration + 20 * Math.abs(minDrop);
+                return { label, series, score };
+            });
+
+            const sorted = scoredEntries
+                .filter((d) => d.label !== currentLabel)
+                .sort((a, b) => b.score - a.score);
+
+            const colorScale = d3
                 .scaleSequential<string>()
-                .domain([0, labels.length - 1])
-                .interpolator(d3.interpolateViridis);
-            const labelToColor = new Map(
-                labels.map((label, i) => [label, color(i)]),
-            );
+                .domain([0, sorted.length - 1])
+                .interpolator(d3.interpolateWarm);
+            const labelToColor = new Map<string, string>();
+            sorted.forEach(({ label }, i) => {
+                labelToColor.set(label, colorScale(i));
+            });
             labelToColor.set(currentLabel, "#e31a1c");
+
+            const orderedEntries = [
+                ...sorted,
+                ...scoredEntries.filter((d) => d.label === currentLabel),
+            ];
 
             const hoverXLabel = g
                 .append("text")
@@ -168,7 +185,7 @@ export default function Chart({
                 .x((d) => xScale(d.x))
                 .y((d) => yScale(d.y));
 
-            for (const [label, points] of Object.entries(filteredData)) {
+            for (const { label, series: points } of orderedEntries) {
                 const series = Object.entries(points).map(([x, y]) => ({
                     x: +x,
                     y: +y,
@@ -306,7 +323,7 @@ export default function Chart({
             const zoomHandler = debounce((deltaY: number) => {
                 setZoom((prev) =>
                     Math.max(
-                        0.05,
+                        0.03,
                         Math.min(1.0, prev * (deltaY < 0 ? 1.02 : 0.98)),
                     ),
                 );
