@@ -62,6 +62,7 @@ const Filter: React.FC<FilterProps> = ({
                 <Slider
                     range
                     allowCross={false}
+                    reverse={true}
                     min={Math.min(...allMinDeltas)}
                     max={Math.max(...allMinDeltas)}
                     value={[minMinDelta, maxMinDelta]}
@@ -72,8 +73,8 @@ const Filter: React.FC<FilterProps> = ({
                     }}
                 />
                 <div className="slider-values">
-                    <span>Drop: {minMinDelta}%</span> -{" "}
-                    <span>{maxMinDelta}%</span>
+                    <span>Drop: {-maxMinDelta}%</span> -{" "}
+                    <span>{-minMinDelta}%</span>
                 </div>
             </div>
             <br />
